@@ -1,36 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { useStoreContext } from '../../utils/GlobalState';
 import {
   UPDATE_CATEGORIES,
   UPDATE_CURRENT_CATEGORY,
-} from "../../utils/actions";
-import { useStoreContext } from "../../utils/GlobalState";
-import { useQuery } from "@apollo/client";
-import { QUERY_CATEGORIES } from "../../utils/queries";
-import { idbPromise } from "../../utils/helpers";
+} from '../../utils/actions';
+import { QUERY_CATEGORIES } from '../../utils/queries';
+import { idbPromise } from '../../utils/helpers';
 
 function CategoryMenu() {
-  // const { data: categoryData } = useQuery(QUERY_CATEGORIES);
-  // const categories = categoryData?.categories || [];
   const [state, dispatch] = useStoreContext();
+
   const { categories } = state;
+
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {
-    //if categoryData exists or has changed from the response of useQuery, then run dispatch()
     if (categoryData) {
-      //execute our dispatch function with our action object indicating the type of action and the data to set our state for categories to
       dispatch({
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories,
       });
       categoryData.categories.forEach((category) => {
-        idbPromise("categories", "put", category);
+        idbPromise('categories', 'put', category);
       });
-      //add else if to check if `loading` is undefined in `useQuery()` Hook
     } else if (!loading) {
-      //since we're offline, get all of the data from the `categories` store
-      idbPromise("categories", "get").then((categories) => {
-        //use retrieved data to set global state for offline browsing
+      idbPromise('categories', 'get').then((categories) => {
         dispatch({
           type: UPDATE_CATEGORIES,
           categories: categories,
