@@ -14,7 +14,7 @@ const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 const Cart = () => {
   const [state, dispatch] = useStoreContext();
   const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
-
+  //useEffect makes Redux a lot easier! and it has made the stripe implementation pretty painless
   useEffect(() => {
     if (data) {
       stripePromise.then((res) => {
