@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { pluralize } from "../../utils/helpers";
 import { useStoreContext } from "../../utils/GlobalState";
 import { ADD_TO_CART, UPDATE_CART_QUANTITY } from "../../utils/actions";
-
+import { idbPromise } from "../../utils/helpers";
 function ProductItem(item) {
   const { image, name, _id, price, quantity } = item;
 
@@ -23,12 +23,17 @@ function ProductItem(item) {
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1, //we had to parseInt because the value was a string
         //and we need it to be an integer because we are adding to the purchase quantity
       });
+      idbPromise("cart", "put", {
+        ...itemInCart,
+        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1,
+      });
     } else {
       //otherwise, call ADD_TO_CART with the item
       dispatch({
         type: ADD_TO_CART,
         product: { ...item, purchaseQuantity: 1 },
       });
+      idbPromise("cart", "put", { ...item, purchaseQuantity: 1 });
     }
   };
 
